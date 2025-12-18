@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:filkom_eats/screens/widgets/custom_textfield.dart';
-import 'verification_screen.dart';
+import 'signup_seller_screen.dart';
+import 'sso_ub_web.dart';
 
 class SignUpScreen extends StatelessWidget {
   const SignUpScreen({super.key});
@@ -8,30 +8,52 @@ class SignUpScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(leading: const BackButton(color: Colors.black)),
+      appBar: AppBar(title: const Text("Sign Up")),
       body: Padding(
-        padding: const EdgeInsets.all(20),
+        padding: const EdgeInsets.all(24),
         child: Column(
           children: [
-            const Text(
-              "Sign Up Your Account",
-              style: TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 30),
-            const CustomTextField(label: "First Name"),
-            const CustomTextField(label: "Last Name"),
-            const CustomTextField(label: "Email"),
-            const CustomTextField(label: "Password", obscure: true),
-            const SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () => Navigator.push(
-                context,
-                MaterialPageRoute(builder: (_) => const VerificationScreen()),
-              ),
-              child: const Text("Sign Up"),
+            _menu(
+              context,
+              title: "Sign Up as Seller",
+              icon: Icons.store,
+              page: const SignUpSellerScreen(),
             ),
             const SizedBox(height: 16),
-            Image.asset("assets/google_fb.png", height: 40),
+            _menu(
+              context,
+              title: "Sign Up with SSO UB",
+              icon: Icons.school,
+              page: const SsoUbWebScreen(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _menu(
+    BuildContext context, {
+    required String title,
+    required IconData icon,
+    required Widget page,
+  }) {
+    return InkWell(
+      onTap: () =>
+          Navigator.push(context, MaterialPageRoute(builder: (_) => page)),
+      child: Container(
+        padding: const EdgeInsets.all(16),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.grey.shade300),
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: Row(
+          children: [
+            Icon(icon),
+            const SizedBox(width: 16),
+            Text(title),
+            const Spacer(),
+            const Icon(Icons.arrow_forward_ios, size: 16),
           ],
         ),
       ),
