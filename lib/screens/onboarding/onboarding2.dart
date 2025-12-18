@@ -14,3 +14,4 @@ class Onboarding2 extends StatelessWidget {
     );
   }
 }
+
