@@ -1,5 +1,3 @@
-import 'package:filkom_eats/screens/home_page.dart';
-import 'package:filkom_eats/screens/menu_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
