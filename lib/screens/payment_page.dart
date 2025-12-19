@@ -1,83 +1,96 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
-import '../providers/cart_provider.dart';
+import 'order_status_page.dart';
+import 'purchase_history.dart';
+import 'purchase_history_service.dart';
+import 'order_page.dart';
 
-class PaymentPage extends StatefulWidget {
-  const PaymentPage({super.key});
+class PaymentPage extends StatelessWidget {
+  final int total;
+  final String location;
+  final List<OrderItem> items;
 
-  @override
-  State<PaymentPage> createState() => _PaymentPageState();
-}
-
-class _PaymentPageState extends State<PaymentPage> {
-  final TextEditingController classController = TextEditingController();
+  const PaymentPage({
+    super.key,
+    required this.total,
+    required this.location,
+    required this.items,
+  });
 
   @override
   Widget build(BuildContext context) {
-    final cart = Provider.of<CartProvider>(context);
-    final int total = cart.totalPrice;
-
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.white,
+        title: const Text("Your Cart"),
+        backgroundColor: const Color(0xffFF4D78),
         centerTitle: true,
-        elevation: 0,
-        title: const Text(
-          "Payment",
-          style: TextStyle(
-            color: Color(0xffFF4D78),
-            fontWeight: FontWeight.bold,
-          ),
-        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(20),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(
-              "Total Payment: Rp $total",
-              style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 25),
+            const SizedBox(height: 20),
 
-            const Text("Delivery to Class / Lab:"),
-            TextField(
-              controller: classController,
-              decoration: const InputDecoration(
-                hintText: "ex: IF-3.13 / Lab JTI",
+            Container(
+              height: 200,
+              width: 200,
+              color: Colors.grey.shade300,
+              child: const Center(child: Text("QR CODE")),
+            ),
+
+            const SizedBox(height: 20),
+
+            Text(
+              "Rp$total",
+              style: const TextStyle(
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Color(0xffFF4D78),
               ),
+            ),
+
+            const SizedBox(height: 12),
+
+            Text(
+              location,
+              style: const TextStyle(color: Colors.grey),
+              textAlign: TextAlign.center,
             ),
 
             const Spacer(),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color(0xffFF4D78),
+
+            ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color(0xffFF4D78),
+                padding: const EdgeInsets.symmetric(vertical: 14),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(24),
                 ),
-                onPressed: () {
-                  if (classController.text.isEmpty) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      const SnackBar(content: Text("Please enter class/lab")),
-                    );
-                    return;
-                  }
-
-                  final destination = classController.text;
-                  cart.clearCart(); // Provider clear cart
-
-                  Navigator.pop(context); // Kembali ke Cart
-                  Navigator.pop(context); // Kembali ke Main Navigation
-
-                  ScaffoldMessenger.of(context).showSnackBar(
-                    SnackBar(
-                      content: Text("Order being delivered to $destination"),
-                    ),
-                  );
-                },
-                child: const Text("Confirm Order"),
               ),
+              onPressed: () {
+                PurchaseHistoryService.add(
+                  PurchaseHistory(
+                    date: DateTime.now(),
+                    total: total,
+                    location: location,
+                    items: items
+                        .map(
+                          (e) => PurchaseItem(
+                            name: e.name,
+                            price: e.price,
+                            qty: e.qty,
+                          ),
+                        )
+                        .toList(),
+                  ),
+                );
+
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(builder: (_) => OrderStatusPage()),
+                );
+              },
+
+              child: const Text("Saya Sudah Bayar"),
             ),
           ],
         ),
